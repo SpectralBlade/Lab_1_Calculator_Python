@@ -1,20 +1,17 @@
-from src.power import power_function
-from src.constants import SAMPLE_CONSTANT
-
+from src.power import calculate_expression
+from src.constants import ASCII_CAT
 
 def main() -> None:
-    """
-    Обязательнная составляющая программ, которые сдаются. Является точкой входа в приложение
-    :return: Данная функция ничего не возвращает
-    """
-
-    target, degree = map(int, input("Введите два числа разделенные пробелом: ").split(" "))
-
-    result = power_function(target=target, power=degree)
-
-    print(result)
-
-    print(SAMPLE_CONSTANT)
+    accept_point = input("Вы любите котов? Введите число \"1\", если да, \"0\", если нет\n")
+    if accept_point == '1':
+        pass
+    else:
+        raise ConnectionRefusedError('Вы не имеете права пользоваться данным калькулятором')
+    expression = input('Отлично! \nВведите выражение в обратной польской нотации: ')
+    answer = calculate_expression(expression)
+    print(f'Ваш ответ: {answer}')
+    print(ASCII_CAT)
 
 if __name__ == "__main__":
     main()
+
