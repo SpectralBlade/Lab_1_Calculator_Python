@@ -114,11 +114,12 @@ def is_valid_rpn_expression(expression_parts):
             if stack_size < 2:
                 return False
             stack_size -= 1
+        # Унарные операторы не учитываются -
+        # не должны менять баланс стека для проверки RPN
         elif part in UNARY_OPERATORS:
             if stack_size < 1:
                 raise SyntaxError(f'Некорректная постановка унарного знака '
                                   f'(вы поставили его в начале выражения в скобках)')
-        # Унарные операторы не учитываются, т.к. не должны менять баланс стека для проверки RPN
 
     return stack_size == 1
 
@@ -134,28 +135,24 @@ def is_valid_rpn_expression_final(tokens):
         к подсчету ответа, и False, если нет. ValueError при неверной постановке
         унарного знака (для дополнительного уточнения)
     """
-    current_token_type = ''
     number_of_tokens = 0
     stack_size = 0
 
     for token_type, token_value in tokens:
         if token_type == 'NUMBER':
             stack_size += 1
-            current_token_type = 'NUMBER'; number_of_tokens += 1
         elif token_type == 'BINARY_OPERATOR':
             # Бинарные операторы требуют наличие двух чисел в стеке
             # для вычисления результата
             if stack_size < 2:
                 return False
             stack_size -= 1
-            current_token_type = 'BINARY_OPERATOR'; number_of_tokens += 1
         elif token_type == 'UNARY_OPERATOR':
             # Унарные операторы требуют хотя бы одного числа в стеке,
             # должны ставиться после числа/скобки
             if stack_size < 1:
                 raise SyntaxError(f'Некорректная постановка унарного знака на позиции '
                                   f'(без учета скобок): {number_of_tokens}')
-            current_token_type = 'UNARY_OPERATOR'; number_of_tokens += 1
 
     return stack_size == 1
 
