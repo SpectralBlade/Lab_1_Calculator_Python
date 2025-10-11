@@ -65,7 +65,9 @@ def tokenize_rpn(expression: str) -> list:
             tokens.append(('UNARY_OPERATOR', part))
 
         else:
-            raise SyntaxError(f"Нераспознанный токен: {part}")
+            raise SyntaxError(f"Нераспознанный токен: {part}\nПоддерживаемые токены: "
+                              f"числа, круглые открывающие/закрывающие скобки, "
+                              f"операторы (+, -, /, *, **, %, //)")
 
         i += 1
 
