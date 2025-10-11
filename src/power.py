@@ -112,6 +112,10 @@ def is_valid_rpn_expression(expression_parts):
             if stack_size < 2:
                 return False
             stack_size -= 1
+        elif part in UNARY_OPERATORS:
+            if stack_size < 1:
+                raise SyntaxError(f'Некорректная постановка унарного знака '
+                                  f'(вы поставили его в начале выражения в скобках)')
         # Унарные операторы не учитываются, т.к. не должны менять баланс стека для проверки RPN
 
     return stack_size == 1

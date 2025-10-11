@@ -6,7 +6,7 @@ def main() -> None:
     if accept_point == '1':
         pass
     else:
-        raise ConnectionRefusedError('Вы не имеете права пользоваться данным калькулятором')
+        raise ConnectionRefusedError('Ошибка: Вы не имеете права пользоваться данным калькулятором')
     expression = input('Отлично! \nВведите выражение в обратной польской нотации: ')
     answer = calculate_expression(expression)
     print(f'Ваш ответ: {answer}')

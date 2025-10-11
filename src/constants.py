@@ -1,4 +1,4 @@
-gitBINARY_OPERATORS = {'+', '-', '*', '/', '%', '//', '**'}
+BINARY_OPERATORS = {'+', '-', '*', '/', '%', '//', '**'}
 UNARY_OPERATORS = {'~', '$'}
 ASCII_CAT = """
    ./\_____/\.
