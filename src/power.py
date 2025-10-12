@@ -203,9 +203,9 @@ def calculate_expression(stack_raw: str) -> float:
                     if stack[i-1][1] == 0:
                         raise ValueError(f'Вычисление остатка от деления на ноль невозможно: '
                                          f'{stack[i-2][1], stack[i-1][1], stack[i][1]}')
-                    elif int(stack[i-1][1]) != stack[i-1][1]:
-                        raise ValueError(f'Операция вычисления остатка от деления на нецелое число'
-                                         f' не поддерживается: {stack[i-1][1]}')
+                    elif int(stack[i-1][1]) != stack[i-1][1] or int(stack[i-2][1]) != stack[i-2][1]:
+                        raise ValueError(f'Операция вычисления остатка от деления с нецелыми числами'
+                                         f' не поддерживается: {stack[i-2][1], stack[i-1][1], stack[i][1]}')
                     else:
                         stack[i-2] = ('NUMBER', stack[i-2][1] % stack[i-1][1])
                         operation_ok = 1
@@ -213,9 +213,9 @@ def calculate_expression(stack_raw: str) -> float:
                     if stack[i-1][1] == 0:
                         raise ValueError(f'Целочисленное деление на ноль невозможно: '
                                          f'{stack[i-2][1], stack[i-1][1], stack[i][1]}')
-                    elif int(stack[i-1][1]) != stack[i-1][1]:
-                        raise ValueError(f'Операция целочисленного деления на нецелое число'
-                                         f' не поддерживается: {stack[i-1][1]}')
+                    elif int(stack[i-1][1]) != stack[i-1][1] or int(stack[i-2][1]) != stack[i-2][1]:
+                        raise ValueError(f'Операция целочисленного деления с нецелыми числами'
+                                         f' не поддерживается: {stack[i-2][1], stack[i-1][1], stack[i][1]}')
                     else:
                         stack[i-2] = ('NUMBER', stack[i-2][1] // stack[i-1][1])
                         operation_ok = 1
