@@ -1,4 +1,4 @@
-from src.constants import BINARY_OPERATORS, UNARY_OPERATORS
+from src.constants import BINARY_OPERATORS, UNARY_OPERATORS, OPERATORS_DICT
 
 def tokenize_rpn(expression: str) -> list:
     """
@@ -158,79 +158,45 @@ def is_valid_rpn_expression_final(tokens):
 
 def calculate_expression(stack_raw: str) -> float:
     """
-    Функция для подсчета результата арифметического выражения.
+    Функция перехода, преобразует выражение в стек и запускает
+    рекурсивную функцию return_result() для подсчета результата
     Аргумент:
         stack_raw (str): исходное выражение,
         через функцию tokenize_rpn преобразовывается
         в list[tuple]: стек с числами и операторами
     Возвращаемое значение:
-        float: Итоговый ответ, или ValueError, если ошибка при
-        какой-либо операции деления на ноль
+        float или ValueError: Итоговый ответ или ошибка при некорректном
+        результате арифметической операции
     """
-    stack = tokenize_rpn(stack_raw)
+    stack = return_result(tokenize_rpn(stack_raw))
+    return stack
 
-    # Обработка унарных операторов ($ никак не изменяет число, ~ умножает его на -1)
-    while len(stack) > 1:
-        for i in range(0, len(stack)):
-            operation_ok = 0
-            if stack[i][1] == '~':
-                stack[i-1] = ('NUMBER', stack[i-1][1]*-1)
-                stack.pop(i)
-                break
-            elif stack[i][1] == '$':
-                stack.pop(i)
-                break
+def return_result(stack: list) -> float:
+    """
+    Функция для подсчета результата арифметического выражения,
+    принимает на вход уже преобразованное в стек выражение и поочередно
+    делает операции с помощью словаря операторов. Вызывает саму себя
+    до тех пор, пока в результате не получится ответ или не произойдет ошибка
+    Аргумент:
+        stack (list[tuple]): стек с числами и операторами
+    Возвращаемое значение:
+        float: или ValueError: Итоговый ответ или ошибка при некорректном
+        результате арифметической операции
+    """
+    for i in range(0, len(stack)):
+        if stack[i][1] in ['~', '$']:
+            a, b, op = stack[i-2][1], stack[i-1][1], stack[i][1]
+            result = OPERATORS_DICT[op](a, b)
+            stack[i-1] = ('NUMBER', result)
+            stack.pop(i)
+            break
+        elif stack[i][0] == 'BINARY_OPERATOR' and stack[i-1][0] == 'NUMBER' and stack[i-2][0] == 'NUMBER':
+            a, b, op = stack[i-2][1], stack[i-1][1], stack[i][1]
+            result = OPERATORS_DICT[op](a, b)
+            stack[i-2] = ('NUMBER', result)
+            stack.pop(i)
+            stack.pop(i-1)
+            break
 
-            # Вычисления внутри списка
-            if stack[i][0] == 'BINARY_OPERATOR' and stack[i-1][0] == 'NUMBER' and stack[i-2][0] == 'NUMBER':
-                if stack[i][1] == '+':
-                    stack[i-2] = ('NUMBER', stack[i-2][1] + stack[i-1][1])
-                    operation_ok = 1
-                elif stack[i][1] == '-':
-                    stack[i-2] = ('NUMBER', stack[i-2][1] - stack[i-1][1])
-                    operation_ok = 1
-                elif stack[i][1] == '*':
-                    stack[i-2] = ('NUMBER', stack[i-2][1] * stack[i-1][1])
-                    operation_ok = 1
-                elif stack[i][1] == '/':
-                    if stack[i-1][1] == 0:
-                        raise ValueError(f'Деление на ноль невозможно: '
-                                         f'{stack[i-2][1], stack[i-1][1], stack[i][1]}')
-                    else:
-                        stack[i-2] = ('NUMBER', stack[i-2][1] / stack[i-1][1])
-                        operation_ok = 1
-                elif stack[i][1] == '%':
-                    if stack[i-1][1] == 0:
-                        raise ValueError(f'Вычисление остатка от деления на ноль невозможно: '
-                                         f'{stack[i-2][1], stack[i-1][1], stack[i][1]}')
-                    elif int(stack[i-1][1]) != stack[i-1][1] or int(stack[i-2][1]) != stack[i-2][1]:
-                        raise ValueError(f'Операция вычисления остатка от деления с нецелыми числами'
-                                         f' не поддерживается: {stack[i-2][1], stack[i-1][1], stack[i][1]}')
-                    else:
-                        stack[i-2] = ('NUMBER', stack[i-2][1] % stack[i-1][1])
-                        operation_ok = 1
-                elif stack[i][1] == '//':
-                    if stack[i-1][1] == 0:
-                        raise ValueError(f'Целочисленное деление на ноль невозможно: '
-                                         f'{stack[i-2][1], stack[i-1][1], stack[i][1]}')
-                    elif int(stack[i-1][1]) != stack[i-1][1] or int(stack[i-2][1]) != stack[i-2][1]:
-                        raise ValueError(f'Операция целочисленного деления с нецелыми числами'
-                                         f' не поддерживается: {stack[i-2][1], stack[i-1][1], stack[i][1]}')
-                    else:
-                        stack[i-2] = ('NUMBER', stack[i-2][1] // stack[i-1][1])
-                        operation_ok = 1
-                elif stack[i][1] == '**':
-                    if isinstance(stack[i-2][1] ** stack[i-1][1], complex):
-                        raise ValueError(f'Отсутствует решение в действительных числах: '
-                                         f'{stack[i-2][1], stack[i-1][1], stack[i][1]}')
-                    else:
-                        stack[i-2] = ('NUMBER', stack[i-2][1] ** stack[i-1][1])
-                        operation_ok = 1
-
-                # Если выполнилась операция, удаляем лишние ее элементы из списка
-                if operation_ok:
-                    stack.pop(i)
-                    stack.pop(i-1)
-                    break
-
-    return stack[0][1]
+    print(stack)
+    return stack[0][1] if len(stack) == 1 else return_result(stack)
