@@ -1,5 +1,5 @@
-from src.power import calculate_expression
-from src.constants import ASCII_CAT
+from power import calculate_expression
+from constants import ASCII_CAT
 
 def main() -> None:
     accept_point = input("Вы любите котов? Введите число \"1\", если да, \"0\", если нет\n")

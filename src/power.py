@@ -1,4 +1,4 @@
-from src.constants import BINARY_OPERATORS, UNARY_OPERATORS, OPERATORS_DICT
+from constants import BINARY_OPERATORS, UNARY_OPERATORS, OPERATORS_DICT
 
 def tokenize_rpn(expression: str) -> list:
     """
